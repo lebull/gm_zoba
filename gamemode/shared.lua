@@ -1,5 +1,5 @@
 --local CMoveData = FindMetaTable( "CMoveData" )
-local function calcSetupMove(ply, mv)
+function GM:SetupMove(ply, mv)
 	
 	if(CAMERA_ON == false) then
 		return
@@ -23,11 +23,7 @@ local function calcSetupMove(ply, mv)
 	--mv:SetAngles(Angle(0, 0, 0))
 	return mv
 end
-hook.Add("SetupMove", "zoba.calcSetupMove", calcSetupMove)
-
-
-
-
+--hook.Add("SetupMove", "zoba.calcSetupMove", calcSetupMove)
 
 
 if SERVER then
@@ -46,14 +42,12 @@ if SERVER then
 	end
 	hook.Add("PlayerSpawn", "zoba.playerSpawn", playerSpawn)
 
-	local function playerDeath( ply )
+	function GM:PlayerDeath( ply )
 
 		stopPlayerCamera(ply)
 	end
 
-	hook.Add("PlayerDeath", "zoba.playerDeath", playerDeath)
-
-
+	--hook.Add("PlayerDeath", "zoba.playerDeath", playerDeath)
 
 	concommand.Add( "zoba_start", startCam)
 	concommand.Add( "zoba_stop", stopCam)

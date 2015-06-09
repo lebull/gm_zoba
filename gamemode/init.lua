@@ -1,3 +1,9 @@
+GM.Name			= "zoba" --What is your Gamemode's name?
+GM.Author		= "lebull" -- Who authored it?
+GM.Email		= "lebullonwow@yahoo.com" --Your email?
+GM.Website      = "example.com" --Website, only if you feel it
+ 
+
 AddCSLuaFile( "cl_init.lua" ) --Tell the server that the client needs to download cl_init.lua
 AddCSLuaFile( "shared.lua" ) --Tell the server that the client needs to download shared.lua
 
