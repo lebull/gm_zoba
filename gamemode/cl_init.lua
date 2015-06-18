@@ -1,13 +1,5 @@
-/**
- *	https://github.com/icedream/gmod-disguiser/blob/master/lua/weapons/disguiser/cl_3rdperson.lua
- *
- *	TODO:
- *
- *
- *	Fire weapon when in camera
- *	Keep mouse bound to the game window.
- *	Lock camera to world boundries
- */
+--https://github.com/icedream/gmod-disguiser/blob/master/lua/weapons/disguiser/cl_3rdperson.lua
+
 
 include( "shared.lua" )
 
@@ -51,30 +43,36 @@ end
 
 --Just a quick test to see if the mouse is in the window.
 local function isMouseInWindow()
-	if 0 <= gui.MouseX() and gui.MouseX() <= ScrW() then
+	if Vector(gui.MousePos()):WithinAABox(Vector(0, 0), Vector(ScrW(), ScrH())) then
+		return true
 	else
 		return false
 	end
+end
 
-	if 0 <= gui.MouseY() and gui.MouseY() <= ScrH() then
-	else
-		return false
+--Keep the mouse within the window.
+local function keepMouseInWindow()
+
+	if system.HasFocus() then
+		new_pos_x = math.Clamp(gui.MouseX(), 0, ScrW() - 1)
+		new_pos_y = math.Clamp(gui.MouseY(), 0, ScrH() - 1)
+		gui.SetMousePos(new_pos_x, new_pos_y)
 	end
-	return true
 end
 
 --Figure out where the camera needs to be
-function GM:calcOverheadView(ply, pos, angles, fov)
+local function calcCameraView(ply, pos, angles, fov)
 
 	if(CAMERA_ON == false) then
 		return
 	end
 
+	keepMouseInWindow()
+
 	if system.HasFocus() and isMouseInWindow() then
 		moveCamera()
 	end
 	
-
 	local view = {}
 
 	view.angles = -Angle(-70, 0, 0)
@@ -82,15 +80,26 @@ function GM:calcOverheadView(ply, pos, angles, fov)
 	view.fov = fov
 	return view
 end
---hook.Add("CalcView", "calcOverheadView", calcOverheadView)
+hook.Add('CalcView', 'zoba.CalcCameraView', calcCameraView)
 
-function GM:GUIMousePressed(mouseCode, aimVector)
+--When the mouse is pressed...
+local function startFire(mouseCode, aimVector)
 	print(mouseCode)
 	if mouseCode == 107 then
-		LocalPlayer():Fire()
+		RunConsoleCommand('+attack')
 	end
 end
---hook.Add("GUIMousePressed","zoba.lookToFire",lookToFire)
+hook.Add('GUIMousePressed', 'zoba.startFire', startFire)
+
+--When the mouse is pressed...
+local function stopFire(mouseCode, aimVector)
+	print(mouseCode)
+	if mouseCode == 107 then
+		RunConsoleCommand('-attack')
+	end
+end
+hook.Add('GUIMouseReleased', 'zoba.stopFire', stopFire)
+
 
 --Set where the player needs to look.
 local function setAimPos()
@@ -118,12 +127,6 @@ local function setAimPos()
 end
 hook.Add("Tick", "setAimPos", setAimPos)
 
---TODO:  Adjust the height of the camera with the mouse wheel.
---	We can do this logorithmically, and set the initial alt based on the
---	user's spawn z position.
-function adjustCameraHeight()
-end
-
 local function startCam()
 	gui.EnableScreenClicker(true)
 	CAMERA_POSITION = LocalPlayer():GetPos() + Vector(-200, 0, 500)
@@ -141,3 +144,11 @@ usermessage.Hook("stopcam", stopCam)
 hook.Add( "ShouldDrawLocalPlayer", "MyShouldDrawLocalPlayer", function( ply )
 	return CAMERA_ON
 end )
+
+--TODO:
+--  Adjust the height of the camera with the mouse wheel.
+--	We can do this logorithmically, and set the initial alt based on the
+--	user's spawn z position.
+-- Keep mouse bound to the game window.
+-- Lock camera to world boundries
+-- Should players be able to aim at the ground?

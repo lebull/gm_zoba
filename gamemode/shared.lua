@@ -1,5 +1,7 @@
+DeriveGamemode( "sandbox" )
+
 --local CMoveData = FindMetaTable( "CMoveData" )
-function GM:SetupMove(ply, mv)
+function calcSetupMove(ply, mv)
 	
 	if(CAMERA_ON == false) then
 		return
@@ -11,19 +13,9 @@ function GM:SetupMove(ply, mv)
 		new_angle = Angle(0, 0, 0)
 		mv:SetMoveAngles(new_angle)
 	end
-	
-	// if(mv:KeyDown( IN_ATTACK )) then
-	// 	mv:AddKey( IN_ATTACK )
-	// 	print("Fire")
-	// 	ply:Fire()
-	// 	RunConsoleCommand( "+attack" )
-	// end
-
-	--print(mv:GetAngles())
-	--mv:SetAngles(Angle(0, 0, 0))
 	return mv
 end
---hook.Add("SetupMove", "zoba.calcSetupMove", calcSetupMove)
+hook.Add("SetupMove", "zoba.calcSetupMove", calcSetupMove)
 
 
 if SERVER then
@@ -46,11 +38,7 @@ if SERVER then
 
 		stopPlayerCamera(ply)
 	end
-
-	--hook.Add("PlayerDeath", "zoba.playerDeath", playerDeath)
-
-	concommand.Add( "zoba_start", startCam)
-	concommand.Add( "zoba_stop", stopCam)
 end
 
 
+--TODO: Make sure 
