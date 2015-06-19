@@ -16,8 +16,11 @@ myHookTester = TestHook!
 
 class GarryAid
 
+    new: =>
+        print "Created"
+
     hook_TestMyHook: =>
-        print("Callback Called:", tostring(@))
+        print("Callback Called:", tostring(@test))
 
     register_hook: (event_name, method, refresh = false) =>
         --If there is a list of hooks somewhere in memory, we
@@ -33,19 +36,23 @@ class GarryAid
 
         method_name = "hook_#{event_name}"
         hook_name = "#{@@.__name}.#{event_name}"
-        myHookTester\add(event_name, hook_name, method)
+        method!
+        --myHookTester\add(event_name, hook_name, method)
         --@_hooked_methods.add(method_name)
 
     register_hooks: =>
-
-        [print(key, value) for key, value in pairs(@@.__base)]
-        for method_name, method in pairs(@@.__base)
-            if string.match(method_name, "^hook_")
+        print x, y for x, y in pairs(@)
+        --for method_name, method in pairs(self)
+            --print method_name, method, @
+            --if string.match(method_name, "^hook_")
+                --method!
+        [[
                 event_name = string.sub(method_name, 6)
-                --@\register_hook(event_name, method)
+                @\register_hook(event_name, method)
+        ]]
 
 
 myFruit = GarryAid!
 --myFruit\register_hook('TestMyHook')
 myFruit\register_hooks!
-myHookTester\run_hooks('TestMyHook')
+--myHookTester\run_hooks('TestMyHook')
