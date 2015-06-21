@@ -1,5 +1,4 @@
 --local CMoveData = FindMetaTable( "CMoveData" )
-export PACKAGE_NAME = 'zoba'
 
 DeriveGamemode( "sandbox" )
 

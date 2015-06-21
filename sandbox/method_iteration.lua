@@ -2,13 +2,14 @@ local TestHook
 do
   local _base_0 = {
     add = function(self, event_name, hook_name, func)
-      print("Hook Registered:", event_name, hook_name, func)
+      func()
       self.hooks[event_name] = func
+      return print("Hook Registered:", event_name, hook_name, func)
     end,
     run_hooks = function(self, event_name)
       for name, func in pairs(self.hooks) do
         if name == event_name then
-          func()
+          func(badvar)
         end
       end
     end
@@ -36,36 +37,30 @@ local GarryAid
 do
   local _base_0 = {
     hook_TestMyHook = function(self)
-      return print("Callback Called:", tostring(self.test))
+      print("Hook was run")
+      return print("Callback Called Correctly:", tostring(self.testvar))
     end,
     register_hook = function(self, event_name, method, refresh)
       if refresh == nil then
         refresh = false
       end
-      local _ = [[        --See if the method is in the hooked methods
-        if refresh
-            --If so, remove the hook
-            nil
-        else
-            --Don't add the hook
-            return nil]]
       local method_name = "hook_" .. tostring(event_name)
       local hook_name = tostring(self.__class.__name) .. "." .. tostring(event_name)
-      return method()
+      return myHookTester:add(event_name, hook_name, method)
     end,
     register_hooks = function(self)
-      for x, y in pairs(self) do
-        print(x, y)
+      for method_name, method in pairs(getmetatable(self)) do
+        if string.match(method_name, "^hook_") then
+          self:register_hook('TestMyHook', method)
+        end
       end
-      return [[                event_name = string.sub(method_name, 6)
-                @\register_hook(event_name, method)
-        ]]
     end
   }
   _base_0.__index = _base_0
   local _class_0 = setmetatable({
     __init = function(self)
-      return print("Created")
+      print("Created")
+      self.testvar = "No"
     end,
     __base = _base_0,
     __name = "GarryAid"
@@ -81,4 +76,5 @@ do
   GarryAid = _class_0
 end
 local myFruit = GarryAid()
+myFruit.testvar = "Yes"
 return myFruit:register_hooks()
