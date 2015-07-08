@@ -1,25 +1,11 @@
-local TestHook
+local GarryAidManager
 do
-  local _base_0 = {
-    add = function(self, event_name, hook_name, func)
-      self.hooks[event_name] = func
-      return print("Hook Registered:", event_name, hook_name, func)
-    end,
-    run_hooks = function(self, event_name)
-      for name, func in pairs(self.hooks) do
-        if name == event_name then
-          func()
-        end
-      end
-    end
-  }
+  local _base_0 = { }
   _base_0.__index = _base_0
   local _class_0 = setmetatable({
-    __init = function(self)
-      self.hooks = { }
-    end,
+    __init = function() end,
     __base = _base_0,
-    __name = "TestHook"
+    __name = "GarryAidManager"
   }, {
     __index = _base_0,
     __call = function(cls, ...)
@@ -29,23 +15,19 @@ do
     end
   })
   _base_0.__class = _class_0
-  TestHook = _class_0
+  GarryAidManager = _class_0
 end
-local myHookTester = TestHook()
 local GarryAid
 do
   local _base_0 = {
-    hook_TestMyHook = function(self)
-      print("Hook was run")
-      return print("Callback Called Correctly:", tostring(self.testvar))
-    end,
     register_hook = function(self, event_name, method, refresh)
       if refresh == nil then
         refresh = false
       end
+      print("Hook Added:", event_name, method)
       local method_name = "hook_" .. tostring(event_name)
       local hook_name = tostring(self.__class.__name) .. "." .. tostring(event_name)
-      return myHookTester:add(event_name, hook_name, function(...)
+      return hook.Add(event_name, hook_name, function(...)
         return method(self, ...)
       end)
     end,
@@ -60,8 +42,6 @@ do
   _base_0.__index = _base_0
   local _class_0 = setmetatable({
     __init = function(self)
-      print("Created")
-      self.testvar = "No"
       return self:register_hooks()
     end,
     __base = _base_0,
@@ -76,8 +56,5 @@ do
   })
   _base_0.__class = _class_0
   GarryAid = _class_0
+  return _class_0
 end
-local myFruit = GarryAid()
-myFruit.testvar = "Yes"
-myFruit:register_hooks()
-return myHookTester:run_hooks('TestMyHook')

@@ -9,7 +9,7 @@ class TestHook
     run_hooks: (event_name) =>
         for name, func in pairs(@hooks)
             if name == event_name
-                nil
+                func!
 
 
 myHookTester = TestHook!
@@ -19,6 +19,7 @@ class GarryAid
     new: =>
         print("Created")
         @testvar = "No"
+        @register_hooks!
 
     hook_TestMyHook: =>
         print("Hook was run")
@@ -38,7 +39,7 @@ class GarryAid
 
         method_name = "hook_#{event_name}"
         hook_name = "#{@@.__name}.#{event_name}"
-        myHookTester\add(event_name, hook_name, => method(self)!)
+        myHookTester\add(event_name, hook_name, (...) -> method(self, ...))
         
         --@_hooked_methods.add(method_name)
 
@@ -51,8 +52,5 @@ class GarryAid
 
 
 myFruit = GarryAid!
---myFruit\register_hook('TestMyHook')
 myFruit.testvar = "Yes"
-
-myFruit\register_hooks!
---myHookTester\run_hooks('TestMyHook')
+myHookTester\run_hooks('TestMyHook')
